@@ -1,0 +1,28 @@
+name: Salesforce Validation
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install @salesforce/cli --global
+          sf --version
+
+      - name: Validate Project Structure
+        run: |
+          ls -la
+          ls -la force-app
+
+      - name: Validate Salesforce Metadata
+        run: |
+          sf project validate

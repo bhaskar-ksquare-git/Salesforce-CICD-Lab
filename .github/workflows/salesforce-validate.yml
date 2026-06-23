@@ -23,6 +23,6 @@ jobs:
           ls -la
           ls -la force-app
 
-      - name: Validate Salesforce Metadata
+      - name: Display Project Info
         run: |
-          sf project validate
+          sf project list

@@ -25,4 +25,6 @@ jobs:
 
       - name: Display Project Info
         run: |
-          sf project list
+          pwd
+          ls -la
+          cat sfdx-project.json

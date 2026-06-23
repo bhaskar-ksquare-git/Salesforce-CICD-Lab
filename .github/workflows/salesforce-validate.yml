@@ -1,4 +1,4 @@
-name: Salesforce Validation
+name: Salesforce Deployment
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  validate:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,13 +24,9 @@ jobs:
           sf org login sfdx-url --sfdx-url-file auth.txt --alias devsandbox
           sf org list
 
-      - name: Validate Deployment
+      - name: Deploy to Salesforce Sandbox
         run: |
-          sf project deploy validate \
+          sf project deploy start \
             --target-org devsandbox \
-            --source-dir force-app
-
-      - name: Display Project Info
-        run: |
-          pwd
-          ls -la
+            --source-dir force-app \
+            --wait 30

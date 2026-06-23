@@ -18,13 +18,19 @@ jobs:
           npm install @salesforce/cli --global
           sf --version
 
-      - name: Validate Project Structure
+      - name: Authenticate to Salesforce Sandbox
         run: |
-          ls -la
-          ls -la force-app
+          echo "${{ secrets.SFDX_AUTH_URL }}" > auth.txt
+          sf org login sfdx-url --sfdx-url-file auth.txt --alias devsandbox
+          sf org list
+
+      - name: Validate Deployment
+        run: |
+          sf project deploy validate \
+            --target-org devsandbox \
+            --source-dir force-app
 
       - name: Display Project Info
         run: |
           pwd
           ls -la
-          cat sfdx-project.json

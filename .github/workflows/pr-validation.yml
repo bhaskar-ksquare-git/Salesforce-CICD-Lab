@@ -10,23 +10,59 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
+      # Checkout Repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Install Salesforce CLI
       - name: Install Salesforce CLI
         run: |
-          npm install @salesforce/cli --global
-          sf --version
+          npm install -g @salesforce/cli
+          sf version
+          node -v
+          npm -v
 
-      - name: Authenticate to Salesforce Sandbox
+      # Verify CLI Installation
+      - name: Verify CLI
+        run: |
+          which sf
+          sf version
+
+      # Create Auth File
+      - name: Create Auth File
         run: |
           echo "${{ secrets.SFDX_AUTH_URL }}" > auth.txt
-          sf org login sfdx-url --sfdx-url-file auth.txt --alias devsandbox
+          ls -l auth.txt
+          wc -c auth.txt
 
+      # Authenticate to Salesforce
+      - name: Authenticate to Salesforce Sandbox
+        run: |
+          sf org login sfdx-url \
+            --sfdx-url-file auth.txt \
+            --alias devsandbox \
+            --set-default
+
+      # Verify Authentication
+      - name: Verify Org Connection
+        run: |
+          sf org list
+
+      # Validate Deployment
       - name: Validate Deployment
         run: |
           sf project deploy validate \
             --target-org devsandbox \
             --source-dir force-app \
             --wait 30
+
+      # Cleanup
+      - name: Cleanup
+        if: always()
+        run: rm -f auth.txt

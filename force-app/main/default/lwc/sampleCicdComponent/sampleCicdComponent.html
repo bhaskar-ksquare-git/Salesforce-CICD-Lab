@@ -1,0 +1,48 @@
+<template>
+    <lightning-card title="Sample CI/CD Component" icon-name="standard:account">
+        <div class="slds-m-around_medium">
+
+            <div class="slds-form-element slds-m-bottom_medium">
+                <label class="slds-form-element__label" for="nameInput">Enter Name</label>
+                <div class="slds-form-element__control">
+                    <lightning-input
+                        type="text"
+                        id="nameInput"
+                        label="Name"
+                        value={inputName}
+                        onchange={handleNameChange}
+                        placeholder="Type your name..."
+                    ></lightning-input>
+                </div>
+            </div>
+
+            <lightning-button
+                label="Submit"
+                variant="brand"
+                onclick={handleSubmit}
+                disabled={isSubmitDisabled}
+            ></lightning-button>
+
+            <template if:true={greeting}>
+                <div class="slds-m-top_medium slds-notify slds-notify_alert slds-theme_success" role="alert">
+                    <span class="slds-assistive-text">success</span>
+                    <h2>{greeting}</h2>
+                </div>
+            </template>
+
+            <template if:true={hasError}>
+                <div class="slds-m-top_medium slds-notify slds-notify_alert slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">error</span>
+                    <h2>{errorMessage}</h2>
+                </div>
+            </template>
+
+            <div class="slds-m-top_medium">
+                <p class="slds-text-body_small slds-text-color_weak">
+                    Submit count: <strong>{submitCount}</strong>
+                </p>
+            </div>
+
+        </div>
+    </lightning-card>
+</template>

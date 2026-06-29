@@ -7,7 +7,7 @@ on:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       # Checkout Repository
@@ -18,12 +18,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       # Install Salesforce CLI
       - name: Install Salesforce CLI
         run: |
-          npm install -g @salesforce/cli
+          npm install -g @salesforce/cli@2.139.6
           sf version
           node -v
           npm -v
@@ -42,12 +42,19 @@ jobs:
           wc -c auth.txt
 
       # Authenticate to Salesforce
+      - name: CLI Health Check
+        run: |
+          sf version
+          sf plugins
+          which sf
+          node -v
+          
       - name: Authenticate to Salesforce Sandbox
         run: |
           sf org login sfdx-url \
             --sfdx-url-file auth.txt \
             --alias devsandbox \
-            --set-default
+            --json
 
       # Verify Authentication
       - name: Verify Org Connection

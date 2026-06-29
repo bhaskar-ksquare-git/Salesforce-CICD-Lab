@@ -44,22 +44,14 @@ jobs:
       # Create Authentication File
       - name: Create Auth File
         run: |
-          echo "${{ secrets.SFDX_AUTH_URL }}" > auth.txt
+          printf '%s' "${{ secrets.SFDX_AUTH_URL }}" > auth.txt
 
-          echo "Auth file created"
+          echo "Auth file created successfully"
 
           ls -l auth.txt
           wc -c auth.txt
-          wc -l auth.txt
 
-      # CLI Health Check
-      - name: CLI Health Check
-        run: |
-          sf version
-          which sf
-          node -v
-
-      # Authenticate to Salesforce
+      # Authenticate to Salesforce Sandbox
       - name: Authenticate to Salesforce Sandbox
         run: |
           sf org login sfdx-url \

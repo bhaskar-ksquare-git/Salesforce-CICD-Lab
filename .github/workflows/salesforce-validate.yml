@@ -7,26 +7,81 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
+      # Checkout Repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Install Salesforce CLI
       - name: Install Salesforce CLI
         run: |
-          npm install @salesforce/cli --global
-          sf --version
+          npm install -g @salesforce/cli@2.139.6
 
-      - name: Authenticate to Salesforce Sandbox
+          echo "Salesforce CLI Version"
+          sf version
+
+          echo "Node Version"
+          node -v
+
+          echo "NPM Version"
+          npm -v
+
+      # Verify CLI Installation
+      - name: Verify CLI
+        run: |
+          which sf
+          sf version
+          sf plugins
+
+      # Create Authentication File
+      - name: Create Auth File
         run: |
           echo "${{ secrets.SFDX_AUTH_URL }}" > auth.txt
-          sf org login sfdx-url --sfdx-url-file auth.txt --alias devsandbox
+
+          echo "Auth file created"
+
+          ls -l auth.txt
+          wc -c auth.txt
+          wc -l auth.txt
+
+      # CLI Health Check
+      - name: CLI Health Check
+        run: |
+          sf version
+          which sf
+          node -v
+
+      # Authenticate to Salesforce
+      - name: Authenticate to Salesforce Sandbox
+        run: |
+          sf org login sfdx-url \
+            --sfdx-url-file auth.txt \
+            --alias devsandbox \
+            --json
+
+      # Verify Authentication
+      - name: Verify Org Connection
+        run: |
           sf org list
 
+      # Deploy Metadata
       - name: Deploy to Salesforce Sandbox
         run: |
           sf project deploy start \
             --target-org devsandbox \
             --source-dir force-app \
             --wait 30
+
+      # Cleanup
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f auth.txt

@@ -25,6 +25,9 @@ jobs:
         run: |
           npm install -g @salesforce/cli@2.139.6
 
+      # Verify Installation
+      - name: Verify CLI
+        run: |
           echo "Salesforce CLI Version"
           sf version
 
@@ -34,37 +37,47 @@ jobs:
           echo "NPM Version"
           npm -v
 
-      # Verify CLI Installation
-      - name: Verify CLI
-        run: |
+          echo "CLI Location"
           which sf
-          sf version
+
+          echo "Installed Plugins"
           sf plugins
 
-      # Create Authentication File
+      # Create Auth File
       - name: Create Auth File
         run: |
           printf '%s' "${{ secrets.SFDX_AUTH_URL }}" > auth.txt
 
-          echo "Auth file created successfully"
-
-          ls -l auth.txt
+      # Inspect Auth File
+      - name: Inspect Auth File
+        run: |
+          echo "File Size:"
           wc -c auth.txt
 
-      # Authenticate to Salesforce Sandbox
+          echo "Starts With:"
+          head -c 20 auth.txt
+
+          echo
+          echo "Ends With:"
+          tail -c 50 auth.txt
+
+      # Verify Login Command Exists
+      - name: Verify Login Command
+        run: |
+          sf org login sfdx-url --help
+
+      # Authenticate
       - name: Authenticate to Salesforce Sandbox
         run: |
           sf org login sfdx-url \
-            --sfdx-url-file auth.txt \
-            --alias devsandbox \
-            --json
+            --sfdx-url-file auth.txt
 
       # Verify Authentication
       - name: Verify Org Connection
         run: |
           sf org list
 
-      # Deploy Metadata
+      # Deploy
       - name: Deploy to Salesforce Sandbox
         run: |
           sf project deploy start \
